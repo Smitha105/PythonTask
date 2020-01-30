@@ -8,15 +8,18 @@ mycol = mydb["Users"]
 print("Enter employee details")
 
 def insert():
-    try:
+    try:        
         employeeId = input('Enter Employee id :')
         val1 = int(employeeId)
+        if (mydb.mycol.count_documents({"id":val1}, limit = 1)):
+            print("Entry with this ID already exists in database")
+            exit()
         employeeName = input('Enter Name :')
         if not re.match("^[A-z]*$", employeeName):
             print("Only characters are allowed")
             exit()
         employeeAge = input('Enter age :')
-        val2 = int(employeeAge)
+        val2 = int(employeeAge)        
         employeeCountry = input('Enter Country :')
         if not re.match("^[A-z]*$", employeeCountry):
             print("Only characters are allowed")
@@ -47,6 +50,9 @@ def update():
     try:
         criteria = input('\nEnter id to update\n')
         val3 = int(criteria)
+        if not (mydb.mycol.count_documents({"id":val3}, limit = 1)):
+            print("ID does not exist in database")
+            insert()
         name = input('\nEnter name to update\n')
         if not re.match("^[A-z]*$", name):
             print("Only characters are allowed")
@@ -77,8 +83,11 @@ def delete():
     try:
         criteria = input('\nEnter employee id to delete\n')
         val5 = int(criteria)
-        mydb.mycol.delete_one({"id":val5})
-        print("\nData deleted\n")
+        if (mydb.mycol.count_documents({"id":val5}, limit = 1)):
+            mydb.mycol.delete_one({"id":val5})
+            print("\nData deleted\n")
+        else:
+            print("Id does not exist")
     except Exception as e:
         print(str(e))
 
